@@ -1,0 +1,47 @@
+import streamlit as st
+import google.generativeai as genai 
+
+# Set up the model
+generation_config = {
+    "temperature": 0.2,
+    "top_p": 0.8,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+}
+
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=generation_config,
+)
+# Set up your API key
+genai.configure(api_key="API_KEY")
+
+def translate_text(text, target_language):
+    prompt = f"Translate the following text to {target_language}: {text}"
+    
+    response = model.generate_content(prompt)
+    
+    return response.text if response.text else "Translation error"
+
+# Streamlit UI
+st.title("Verto Ai")
+st.write("Translate text into different languages instantly!")
+
+# Input fields
+text = st.text_area("Enter text to translate:")
+target_lang = st.text_input("Target Language (e.g., French)")
+
+if st.button("Translate"):
+    if text and target_lang:
+        translated_text = translate_text(text, target_lang)
+        st.subheader("Translation:")
+        st.write(translated_text)
+    else:
+        st.warning("Please enter both text and target language.")
+
+# Example usage
+source_text = "Hello, how are you?"
+target_lang = "French"
+
+translated_text = translate_text(source_text, target_lang)
+print(f"Translated Text ({target_lang}): {translated_text}")
